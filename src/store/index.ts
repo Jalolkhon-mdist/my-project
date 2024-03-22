@@ -4,6 +4,8 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 
 const store = configureStore({ reducer: rootReducer });
 
+export default store;
+
 setupListeners(store.dispatch);
 
 export type RootState = ReturnType<typeof store.getState>;

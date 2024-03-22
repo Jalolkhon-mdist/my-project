@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import Searchbar from "./Searchbar";
 import { Dropdown } from "antd";
 import type { MenuProps } from "antd";
+import styled from "styled-components";
 
 const Navbar: FC = () => {
   const items: MenuProps["items"] = [
@@ -21,9 +22,9 @@ const Navbar: FC = () => {
   ];
 
   return (
-    <nav id="Navbar">
-      <div className="container">
-        <div className="content">
+    <Container id="Navbar">
+      <div>
+        <Content className="content">
           <div className="logo">
             <NavLink to={"/"}>Logo</NavLink>
           </div>
@@ -47,17 +48,84 @@ const Navbar: FC = () => {
                     <div className="img">
                       <img src="" />
                     </div>
-                    <span className="material-symbols-outlined icon">expand_more</span>
+                    <span className="material-symbols-outlined icon">
+                      expand_more
+                    </span>
                   </div>
                 </Dropdown>
               </button>
             </li>
           </ul>
           {/*  */}
-        </div>
+        </Content>
       </div>
-    </nav>
+    </Container>
   );
 };
 
 export default Navbar;
+
+const Container = styled.nav`
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: var(--content-background);
+  z-index: 1000;
+  padding: 0 9px;
+`;
+
+const Content = styled.div`
+  border-bottom: 0.5px solid var(--border-color);
+  width: 100%;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: var(--navbar-height);
+
+  .logo {
+    * {
+      font-size: 20px;
+      text-decoration: none;
+      color: $text-color;
+    }
+  }
+
+  ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    column-gap: 20px;
+
+    li {
+      button {
+        cursor: pointer;
+
+        span {
+          font-size: 25px;
+        }
+      }
+
+      [data-profile] {
+        .dropdown {
+          display: flex;
+          align-items: center;
+          column-gap: 10px;
+
+          .icon {
+            font-size: 25px;
+          }
+
+          .img {
+            height: 40px;
+            aspect-ratio: 1/1;
+            background: $element-bg;
+            border: 1px solid $border-color;
+            border-radius: 50%;
+            overflow: hidden;
+          }
+        }
+      }
+    }
+  }
+`;

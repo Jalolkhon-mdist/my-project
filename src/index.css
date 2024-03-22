@@ -1,9 +1,29 @@
+@import url(./assets/fonts/fonts.css);
+
+:root {
+  --main-background: #0b1416;
+  --navbar-height: 56px;
+  --border-color: #3c4345;
+
+  --font-light: "font-light";
+  --font-thin: "font-thin";
+  --font-regular: "font-regular";
+  --font-medium: "font-medium";
+  --font-bold: "font-bold";
+
+  --element-background: #f8fafd;
+  --title-color: #f2f4f5e4;
+  --text-color: rgba(230, 230, 230, 0.832);
+  --content-background: #0b1416;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   list-style: none;
   text-decoration: none;
+  font-family: var(--font-regular);
 }
 
 .container {
