@@ -46,6 +46,7 @@ const post = createSlice({
         if (data && data?.[0]) {
           returnData[data?.[0].id] = data[0];
           state.comments[key] = { ...state.comments[key], ...returnData };
+          state.data[key].comments[0].count += 1;
         }
       }
     });
@@ -56,7 +57,8 @@ const getPostList = createAsyncThunk("getPostList", async (_, { getState }) => {
   const state = getState() as RootState;
   const user_id = state.user.data?.id;
 
-  let queryString = "*, user: user_data(*), likes: post_reactions(count)";
+  let queryString =
+    "*, user: user_data(*), likes: post_reactions(count), comments(count)";
 
   if (user_id) {
     queryString += ", reaction: post_reactions(type)";
@@ -83,9 +85,12 @@ const getPost = createAsyncThunk(
     const user_id = state.user.data?.id;
     const post = state.post.data[post_id];
 
+    dispatch(getComments(post_id));
+
     if (post) return;
 
-    let queryString = "*, user: user_data(*), likes: post_reactions(count)";
+    let queryString =
+      "*, user: user_data(*), likes: post_reactions(count), comments(count)";
 
     if (user_id) {
       queryString += ", reaction: post_reactions(type)";
@@ -100,8 +105,6 @@ const getPost = createAsyncThunk(
     if (user_id) {
       query = query.eq("reaction.user_id", user_id);
     }
-
-    dispatch(getComments(post_id));
 
     const { data } = await query;
 

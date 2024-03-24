@@ -66,7 +66,7 @@ const PostList: FC = () => {
                         <span className="material-symbols-outlined icon">
                           comment
                         </span>
-                        <p>{elem?.likes?.[0]?.count}</p>
+                        <p>{elem?.comments?.[0]?.count}</p>
                       </button>
                       <button>
                         <span className="material-symbols-outlined icon">

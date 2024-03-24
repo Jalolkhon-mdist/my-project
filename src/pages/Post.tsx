@@ -5,6 +5,7 @@ import { AppDispatch, RootState } from "store";
 import { api } from "store/reducers";
 import styled from "styled-components";
 import utils from "utils";
+import parse from "html-react-parser";
 
 const Post: FC = () => {
   const params = useParams();
@@ -22,7 +23,7 @@ const Post: FC = () => {
   const user = useSelector((state: RootState) => state.user.data);
 
   const [addComment, setAddComment] = useState({
-    open: true,
+    open: false,
     ref: useRef<HTMLDivElement | null>(null),
     disabled: true,
     trim() {
@@ -52,7 +53,7 @@ const Post: FC = () => {
 
   if (post) {
     const reaction = post?.reaction?.[0]?.type;
-    // console.log(post);
+    console.log(post);
     // console.log(comments);
 
     return (
@@ -103,7 +104,7 @@ const Post: FC = () => {
               </div>
               <button>
                 <span className="material-symbols-rounded icon">comment</span>
-                <p>{post?.likes?.[0]?.count}</p>
+                <p>{post?.comments?.[0]?.count}</p>
               </button>
               <button>
                 <span className="material-symbols-rounded icon">ios_share</span>
@@ -147,7 +148,7 @@ const Post: FC = () => {
                         className="add"
                         disabled={addComment.disabled}
                         onClick={() =>
-                          addComment.post(addComment.ref.current?.textContent!)
+                          addComment.post(addComment.ref.current?.innerHTML!)
                         }
                       >
                         Add a Comment
@@ -183,7 +184,9 @@ const Post: FC = () => {
                             </span>
                           </div>
                         </div>
-                        <div className="comment-content">{comment.content}</div>
+                        <div className="comment-content">
+                          {parse(comment.content)}
+                        </div>
                         <div className="comment-options">
                           <div className="comment-reactions">
                             <button className="comment-reaction">
