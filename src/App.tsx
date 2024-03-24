@@ -1,9 +1,9 @@
 import "./App.scss";
 import "../backend/index";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import MainLayout from "./layouts/MainLayout";
 import { Provider } from "react-redux";
 import store from "store";
+import { MainPage } from "pages";
 
 function App() {
   return (
@@ -11,7 +11,7 @@ function App() {
       <Provider store={store}>
         <BrowserRouter>
           <Routes>
-            <Route element={<MainLayout />} path="/" />
+            <Route element={<MainPage />} path="*" />
           </Routes>
         </BrowserRouter>
       </Provider>

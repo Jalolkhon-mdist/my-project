@@ -87,7 +87,11 @@ const Content = styled.div`
     * {
       font-size: 20px;
       text-decoration: none;
+<<<<<<< HEAD
+      color: var(--title-color);
+=======
       color: $text-color;
+>>>>>>> 4cd9569ad7189aa3bda1087c15c5d41457389b5f
     }
   }
 
