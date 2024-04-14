@@ -6,7 +6,7 @@ import { AppDispatch } from "store";
 import { Login, MainPage, Create, Profile, Edit } from "pages";
 import { useEffect, useState } from "react";
 import { userApi } from "store/reducers/user";
-import { UIProvider } from "ui"; 
+import { UIProvider } from "ui";
 
 function App() {
   const dispatch = useDispatch() as AppDispatch;
