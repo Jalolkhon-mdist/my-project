@@ -1,13 +1,12 @@
 const utils = {
-  likes: {
-    count(count: number) {
-      const str = count.toString();
-      if (str.length > 3) {
-        return `${str.substring(0, 1)}.${str.substring(1, 2)}k`;
-      } else {
-        return str;
-      }
-    },
+  count(count: number) {
+    if (!count && count !== 0) return;
+    const str = count.toString();
+    if (str.length > 3) {
+      return `${str.substring(0, 1)}.${str.substring(1, 2)}k`;
+    } else {
+      return str;
+    }
   },
   timeAgo(ts: string) {
     const postedDate: Date = new Date(ts);
@@ -78,6 +77,56 @@ const utils = {
     } else {
       return false;
     }
+  },
+  topics: [
+    { icon: "joystick", name: "Gaming" },
+    { icon: "monitoring", name: "Business" },
+    { icon: "gamepad", name: "Game Reviews" },
+    { icon: "joystick", name: "PC Gaming" },
+    { icon: "sports_soccer", name: "Sport" },
+    { icon: "keyboard", name: "Software Development" },
+    { icon: "headset", name: "Accessories" },
+    { icon: "comic_bubble", name: "Anime" },
+    { icon: "smart_display", name: "Television" },
+    { icon: "styler", name: "Fashion" },
+    { icon: "movie_edit", name: "Movies" },
+    { icon: "trophy", name: "Achievements and Trophies" },
+  ],
+  editorConfig: {
+    formats: [
+      "header",
+      "bold",
+      "italic",
+      "underline",
+      "strike",
+      "blockquote",
+      "list",
+      "bullet",
+      "link",
+      "color",
+      "image",
+      "background",
+      "align",
+    ],
+    modules: {
+      toolbar: [
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+        ["bold", "italic", "underline", "strike", "blockquote"],
+        [{ align: ["right", "center", "justify"] }],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["link", "image"],
+        [
+          {
+            color: [],
+          },
+        ],
+        [
+          {
+            background: [],
+          },
+        ],
+      ],
+    },
   },
 };
 
