@@ -12,11 +12,11 @@ const profile = createSlice({
     builder.addCase(postApi.delete.fulfilled, (state, action) => {
       if (action.payload) {
         const { user_id, key } = action.payload;
-        const list = state.data[user_id];
+        const list = state.data[user_id]?.posts;
 
         if (key && list) {
           const newArr = list.filter((e: any) => e.id !== key);
-          state.data[user_id] = newArr;
+          state.data[user_id].posts = newArr;
         }
       }
     });

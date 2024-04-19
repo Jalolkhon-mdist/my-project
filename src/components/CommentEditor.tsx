@@ -3,23 +3,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "store";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
-import { requireLogin } from "store/reducers/user";
 import UserImage from "./UserImage";
 import { postApi } from "store/reducers/post";
+import Dropdown from "./Dropdown";
+import { setCommentEditor } from "store/reducers/commenteditor";
 
 interface Props {
   onCancel?: () => void;
-  element?: any;
-  open?: boolean;
 }
 
-const CommentEditor: FC<Props> = ({ onCancel, open = false, element }) => {
+const CommentEditor: FC<Props> = ({ onCancel }) => {
   const post_id = useParams()?.id || "";
+  const editor = useSelector((state: RootState) => state.commenteditor);
+  const element = editor.element;
+  const open = editor.open;
   const user = useSelector((state: RootState) => state.user.data);
   const metadata = useSelector((state: RootState) => state.user.metadata);
   const ref = useRef<HTMLDivElement | null>(null);
   const [disabled, setDisabled] = useState(false);
-  const [focus, setFocus] = useState(open);
   const dispatch: AppDispatch = useDispatch();
 
   function onInput() {
@@ -33,7 +34,8 @@ const CommentEditor: FC<Props> = ({ onCancel, open = false, element }) => {
   }
 
   function cancel() {
-    setFocus(false);
+    dispatch(setCommentEditor({ element: null, open: false }));
+
     if (onCancel) {
       onCancel();
     }
@@ -43,11 +45,12 @@ const CommentEditor: FC<Props> = ({ onCancel, open = false, element }) => {
   }
 
   useEffect(() => {
+    ref.current?.focus();
+
     if (element && ref.current) {
-      ref.current?.focus();
-      ref.current.innerHTML = element.text;
+      ref.current.innerHTML = element?.text;
     }
-  }, []);
+  }, [element, open]);
 
   function submit() {
     const value = ref.current?.innerHTML;
@@ -75,56 +78,41 @@ const CommentEditor: FC<Props> = ({ onCancel, open = false, element }) => {
 
   if (user && user.id) {
     return (
-      <Container>
-        <div className="new-comment">
-          <div className="body">
-            <div className="img">
-              <UserImage src={metadata?.img} alt={metadata?.name} />
+      <Dropdown open={open}>
+        <Container>
+          <div className="new-comment">
+            <div className="body">
+              <div className="img">
+                <UserImage src={metadata?.img} alt={metadata?.name} />
+              </div>
+              <div className="comment-input-wrapper">
+                <div
+                  className="comment-input"
+                  contentEditable={true}
+                  onInput={onInput}
+                  ref={ref}
+                  role="textbox"
+                ></div>
+              </div>
             </div>
-            <div className="comment-input-wrapper">
-              <div
-                className="comment-input"
-                contentEditable={true}
-                onInput={onInput}
-                ref={ref}
-                role="textbox"
-                onFocus={() => setFocus(true)}
-              ></div>
-            </div>
-          </div>
-          {focus ? (
             <div className="footer">
               <div className="buttons-wrapper">
-                <button className="button" onClick={cancel}>
+                <button className="custom-btn secondary red" onClick={cancel}>
                   Cancel
                 </button>
                 <button
-                  className="button"
+                  className="custom-btn"
                   disabled={disabled}
                   data-primary
                   onClick={submit}
                 >
-                  Leave Comment
+                  Save
                 </button>
               </div>
             </div>
-          ) : (
-            <div className="footer-margin"></div>
-          )}
-        </div>
-      </Container>
-    );
-  } else {
-    return (
-      <Container>
-        <button
-          className="warning"
-          onClick={() => dispatch(requireLogin(true))}
-        >
-          <span className="material-symbols-rounded icon">add</span>
-          <span>Leave a Comment</span>
-        </button>
-      </Container>
+          </div>
+        </Container>
+      </Dropdown>
     );
   }
 };
@@ -132,7 +120,7 @@ const CommentEditor: FC<Props> = ({ onCancel, open = false, element }) => {
 export default CommentEditor;
 
 const Container = styled.div`
-  padding: 15px 0;
+  padding: 20px;
 
   .new-comment {
     width: 100%;
@@ -144,15 +132,15 @@ const Container = styled.div`
       width: 100%;
 
       .img {
-        height: 30px;
-        min-width: 30px;
+        height: 50px;
+        min-width: 50px;
         margin-right: 15px;
         border-radius: 50%;
         overflow: hidden;
-        background: var(--element-background);
+        background: var(--element-background-hover);
 
         .alt {
-          font-size: 16px;
+          font-size: 22px;
         }
       }
 
@@ -192,19 +180,16 @@ const Container = styled.div`
         align-items: center;
         column-gap: 5px;
 
-        .button {
-          font-family: var(--font-semiBold);
-          color: var(--title-color);
-          border: 0.5px solid var(--border-color);
-          padding: 5px 15px;
-          font-size: 15px;
-          cursor: pointer;
-          border-radius: 5px;
-          background: var(--element-background);
+        .custom-btn {
+          padding: 0 15px;
+          color: white;
 
-          &[data-primary] {
-            background-color: var(--element-color);
-            color: white;
+          &.red {
+            color: var(--red-color);
+
+            &:hover {
+              color: white;
+            }
           }
         }
       }

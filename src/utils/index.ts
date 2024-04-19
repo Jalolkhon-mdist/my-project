@@ -1,3 +1,107 @@
+const categories = [
+  {
+    label: "Mental Health",
+    color: "blue",
+    value: [
+      { value: "addiction-recovery", label: "Addiction Recovery" },
+      { value: "anxiety", label: "Anxiety" },
+      { value: "bipolar-disorder", label: "Bipolar Disorder" },
+      { value: "depression", label: "Depression" },
+      { value: "eating-disorders", label: "Eating Disorders" },
+      { value: "grief-and-loss", label: "Grief & Loss" },
+      {
+        value: "obsessive-compulsive-disorder",
+        label: "Obsessive-Compulsive Disorder",
+      },
+      { value: "personality-disorders", label: "Personality Disorders" },
+      { value: "ptsd", label: "PTSD" },
+      { value: "schizophrenia", label: "Schizophrenia" },
+      { value: "self-harm", label: "Self-Harm" },
+      { value: "sexual-health", label: "Sexual Health" },
+      { value: "stress", label: "Stress" },
+      { value: "suicide-prevention", label: "Suicide Prevention" },
+      { value: "trauma", label: "Trauma" },
+    ],
+  },
+  {
+    label: "Physical Health",
+    color: "green",
+    value: [
+      { value: "chronic-pain", label: "Chronic Pain" },
+      { value: "cancer", label: "Cancer" },
+      { value: "diabetes", label: "Diabetes" },
+      { value: "heart-disease", label: "Heart Disease" },
+      { value: "obesity", label: "Obesity" },
+      { value: "arthritis", label: "Arthritis" },
+      { value: "asthma", label: "Asthma" },
+      { value: "allergies", label: "Allergies" },
+      { value: "hypertension", label: "Hypertension" },
+      { value: "stroke", label: "Stroke" },
+      { value: "mental-health-conditions", label: "Mental Health Conditions" },
+      { value: "pregnancy", label: "Pregnancy" },
+      { value: "childhood-illnesses", label: "Childhood Illnesses" },
+      { value: "senior-health", label: "Senior Health" },
+      { value: "reproductive-health", label: "Reproductive Health" },
+    ],
+  },
+  {
+    label: "Addiction & Recovery",
+    color: "red",
+    value: [
+      { value: "alcoholism", label: "Alcoholism" },
+      { value: "drug-addiction", label: "Drug Addiction" },
+      { value: "gambling-addiction", label: "Gambling Addiction" },
+      { value: "sex-addiction", label: "Sex Addiction" },
+      { value: "smoking-cessation", label: "Smoking Cessation" },
+      { value: "substance-abuse", label: "Substance Abuse" },
+      { value: "sober-living", label: "Sober Living" },
+    ],
+  },
+  {
+    label: "Relationships",
+    color: "purple",
+    value: [
+      { value: "marriage", label: "Marriage" },
+      { value: "dating", label: "Dating" },
+      { value: "divorce", label: "Divorce" },
+      { value: "parenting", label: "Parenting" },
+      { value: "family-issues", label: "Family Issues" },
+      { value: "friendship", label: "Friendship" },
+      { value: "loneliness", label: "Loneliness" },
+      { value: "domestic-violence", label: "Domestic Violence" },
+      { value: "relationship-breakups", label: "Relationship Breakups" },
+      { value: "infidelity", label: "Infidelity" },
+      { value: "codependency", label: "Codependency" },
+      { value: "intimacy", label: "Intimacy" },
+      { value: "communication", label: "Communication" },
+      { value: "trust-issues", label: "Trust Issues" },
+      { value: "jealousy", label: "Jealousy" },
+    ],
+  },
+  {
+    label: "LGBTQ+",
+    color: "orange",
+    value: [
+      { value: "coming-out", label: "Coming Out" },
+      { value: "gender-identity", label: "Gender Identity" },
+      { value: "sexual-orientation", label: "Sexual Orientation" },
+      { value: "transgender", label: "Transgender" },
+      { value: "bisexuality", label: "Bisexuality" },
+      { value: "gay", label: "Gay" },
+      { value: "lesbian", label: "Lesbian" },
+      { value: "queer", label: "Queer" },
+      { value: "pansexuality", label: "Pansexuality" },
+      { value: "asexuality", label: "Asexuality" },
+      { value: "intersex", label: "Intersex" },
+      { value: "gender-expression", label: "Gender Expression" },
+      { value: "acceptance", label: "Acceptance" },
+      { value: "community", label: "Community" },
+      { value: "discrimination", label: "Discrimination" },
+      { value: "pride", label: "Pride" },
+    ],
+  },
+];
+
 const utils = {
   count(count: number) {
     if (!count && count !== 0) return;
@@ -24,32 +128,27 @@ const utils = {
 
     const returnString = {
       seconds() {
-        return `${timeDifference} seconds ago`;
+        return `${timeDifference}s`;
       },
       minutes() {
         const minutes: number = Math.floor(timeDifference / minute);
-        const isOne = minutes === 1;
-        return `${minutes} ${isOne ? "minute" : "minutes"} ago`;
+        return `${minutes}min`;
       },
       hours() {
         const hours: number = Math.floor(timeDifference / hour);
-        const isOne = hours === 1;
-        return `${hours} ${isOne ? "hour" : "hours"} ago`;
+        return `${hours}h`;
       },
       days() {
         const days: number = Math.floor(timeDifference / day);
-        const isOne = days === 1;
-        return `${days} ${isOne ? "day" : "days"} ago`;
+        return `${days}d`;
       },
       weeks() {
         const weeks: number = Math.floor(timeDifference / week);
-        const isOne = weeks === 1;
-        return `${weeks} ${isOne ? "week" : "weeks"} ago`;
+        return `${weeks}w`;
       },
       months() {
         const months: number = Math.floor(timeDifference / month);
-        const isOne = months === 1;
-        return `${months} ${isOne ? "month" : "months"} ago`;
+        return `${months}mo`;
       },
     };
 
@@ -128,6 +227,7 @@ const utils = {
       ],
     },
   },
+  categories,
 };
 
 export default utils;

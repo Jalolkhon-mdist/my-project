@@ -1,33 +1,79 @@
 import { FC } from "react";
 import { Link, NavLink } from "react-router-dom";
-import Searchbar from "./Searchbar";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { RootState } from "store";
 import UserImage from "./UserImage";
+import logo from "../assets/img/4eea21a0dd0608a47514986c7a755225c9c025ee.jpeg";
+import utils from "utils";
 
 const Navbar: FC = () => {
   const metadata = useSelector((state: RootState) => state.user.metadata);
   const user = useSelector((state: RootState) => state.user.data);
-  console.log(metadata);
 
   return (
     <Container id="Navbar">
       <div>
         <Content className="content">
-          <div className="logo">
-            <NavLink to={"/"}>Logo</NavLink>
+          <div className="left">
+            <div className="logo">
+              <NavLink to={"/"}>
+                <img src={logo} alt="" />
+              </NavLink>
+            </div>
+            <ul className="group-list">
+              {utils.categories.map((group) => {
+                return (
+                  <li className="group" key={group.label}>
+                    <p className="group-label">{group.label}</p>
+                    <div className="category-list">
+                      {group.value.map((e, idx) => {
+                        return (
+                          <div key={idx} className="category">
+                            <Link to={`c/${e.value}`}>
+                              <p>{e.label}</p>
+                            </Link>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
-          <Searchbar />
           {/*  */}
           <div className="right">
-            <div className="profile">
-              <Link to={`profile/${user?.id}`} data-profile>
-                <div className="user-img">
-                  <UserImage src={metadata?.img} alt={metadata?.name} />
-                </div>
-              </Link>
-            </div>
+            {user?.id ? (
+              <div className="profile">
+                <Link to={`profile/${user?.id}`} data-profile>
+                  <div className="user-img">
+                    <UserImage src={metadata?.img} alt={metadata?.name} />
+                  </div>
+                </Link>
+              </div>
+            ) : (
+              <ul className="link-list">
+                <li className="link">
+                  <Link to={``} className="custom-btn">
+                    Support Someone
+                  </Link>
+                </li>
+                <li className="link">
+                  <Link to={`/login?type=sign-up`} className="custom-btn">
+                    Sign Up
+                  </Link>
+                </li>
+                <li className="link">
+                  <Link to={`/login`} className="custom-btn">
+                    <span className="material-symbols-outlined filled custom-btn-icon">
+                      person
+                    </span>
+                    Log In
+                  </Link>
+                </li>
+              </ul>
+            )}
           </div>
           {/*  */}
         </Content>
@@ -42,24 +88,90 @@ const Container = styled.nav`
   position: fixed;
   top: 0;
   width: 100%;
-  background-color: var(--content-background);
+  background-color: var(--element-background);
   z-index: 1000;
-  padding: 0 9px;
+  border-bottom: 0.5px solid var(--border-color);
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.25);
 `;
 
 const Content = styled.div`
-  border-bottom: 0.5px solid var(--border-color);
+  max-width: 1380px;
   width: 100%;
+  margin: 0 auto;
   padding: 0 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: var(--navbar-height);
 
-  .logo {
-    * {
-      font-size: 20px;
-      text-decoration: none;
+  .left {
+    display: flex;
+    align-items: center;
+    column-gap: 20px;
+
+    .logo {
+      height: 40px;
+
+      img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .group-list {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      column-gap: 20px;
+
+      .group {
+        position: relative;
+        font-size: 14px;
+        color: var(--text-color);
+        cursor: pointer;
+        padding: 10px 0;
+
+        &:hover {
+          .category-list {
+            display: block;
+          }
+        }
+
+        .category-list {
+          background: var(--element-background);
+          border: 1px solid var(--border-color);
+          box-shadow: 0 12px 12px rgba(0, 0, 0, 0.15);
+          padding: 7px;
+          display: none;
+          position: absolute;
+          top: calc(100%);
+          min-width: 200px;
+          left: 0;
+
+          &:hover {
+            display: block;
+          }
+
+          .category {
+            padding: 7px;
+
+            &:hover {
+              background: var(--element-color);
+
+              a {
+                color: white;
+              }
+            }
+
+            a {
+              font-size: 14px;
+              color: var(--text-color);
+              white-space: nowrap;
+            }
+          }
+        }
+      }
     }
   }
 
@@ -75,6 +187,12 @@ const Content = styled.div`
           font-size: 16px;
         }
       }
+    }
+
+    .link-list {
+      display: flex;
+      column-gap: 10px;
+      align-items: center;
     }
   }
 `;

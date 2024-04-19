@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
 import styled from "styled-components";
 import utils from "utils";
 import parse from "html-react-parser";
@@ -7,6 +7,7 @@ import Options from "../ui/Options";
 import { useDispatch, useSelector } from "react-redux";
 import { postApi } from "store/reducers/post";
 import { AppDispatch, RootState } from "store";
+import { UIContext } from "ui";
 
 interface Props {
   elem: any;
@@ -17,20 +18,26 @@ const PostCard: FC<Props> = ({ elem }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch() as AppDispatch;
   const user = useSelector((state: RootState) => state.user.data);
+  const { setId } = useContext(UIContext);
 
   const methods = {
     delete: async function () {
       await dispatch(postApi.delete(elem.id));
+      setId(0);
     },
     update: async function () {
       navigate(`/edit/${elem.id}`);
+      setId(0);
     },
   };
 
   return (
     <Container>
       <Content>
-        <div className="post" onClick={() => navigate(`/post/${elem.id}`)}>
+        <div
+          className="post box-style"
+          onClick={() => navigate(`/post/${elem.id}`)}
+        >
           <div className="post-container">
             {/*  */}
             <div className="options">
@@ -118,10 +125,10 @@ const Container = styled.div``;
 const Content = styled.div`
   .post {
     width: 100%;
-    border-bottom: 0.5px solid var(--border-color-dark);
+    margin: 15px 0;
+    cursor: pointer;
 
     .post-container {
-      padding: 10px 15px;
       display: flex;
       flex-direction: column;
       width: 100%;
@@ -131,10 +138,6 @@ const Content = styled.div`
         position: absolute;
         right: 10px;
         top: 10px;
-      }
-
-      &:hover {
-        background-color: var(--content-background-hover);
       }
 
       .user {

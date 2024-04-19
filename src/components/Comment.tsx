@@ -1,9 +1,7 @@
-import { FC, useMemo, useRef, useState } from "react";
+import { FC, useMemo, useRef } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "store";
-import { Options } from "ui";
-import CommentEditor from "./CommentEditor";
 import parse from "html-react-parser";
 import { useParams } from "react-router-dom";
 import { setCommentReaction } from "store/reducers/post";
@@ -11,6 +9,7 @@ import { requireLogin } from "store/reducers/user";
 import UserImage from "./UserImage";
 import { postApi } from "store/reducers/post";
 import utils from "utils";
+import { setCommentEditor } from "store/reducers/commenteditor";
 
 interface Props {
   element: any;
@@ -21,7 +20,6 @@ const Comment: FC<Props> = ({ element }) => {
   const post_id = useParams()?.id || "";
   const dispatch: AppDispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user.data);
-  const [edit, setEdit] = useState(false);
 
   const timeAgo = useMemo(
     () => utils.timeAgo(element.created_at),
@@ -92,106 +90,90 @@ const Comment: FC<Props> = ({ element }) => {
 
   return (
     <Container>
-      {edit ? (
-        <CommentEditor
-          onCancel={() => setEdit(false)}
-          open={true}
-          element={element}
-        />
-      ) : (
-        <Content>
-          <div className="img">
-            <UserImage src={element?.user.img} alt={element?.user.name} />
-          </div>
-          <div className="comment-main-wrapper">
-            <div className="comment-main">
-              <div className="header">
-                <div className="name">{element.user?.name}</div>
-                <div>{timeAgo}</div>
-                <div>{element?.changed ? "(changed)" : ""}</div>
-              </div>
-              <div className="body">
-                <div className="text">{parse(element?.text)}</div>
-              </div>
-              <div className="footer">
-                <button className="btn" onClick={() => methods.like()}>
-                  <p>{methods.reactionsCount().likes}</p>
-                  <span
-                    className={`material-symbols-outlined icon ${
-                      element?.reaction?.[0]?.type === "like" && user?.id
-                        ? "filled"
-                        : ""
-                    }`}
-                  >
-                    thumb_up
-                  </span>
-                </button>
-                <button className="btn" onClick={() => methods.dislike()}>
-                  <p>{methods.reactionsCount().dislikes}</p>
-                  <span
-                    className={`material-symbols-outlined icon ${
-                      element?.reaction?.[0]?.type === "dislike" && user?.id
-                        ? "filled"
-                        : ""
-                    }`}
-                  >
-                    thumb_down
-                  </span>
-                </button>
-                <button className="btn">Respond</button>
-              </div>
+      <Content>
+        <div className="img">
+          <UserImage src={element?.user.img} alt={element?.user.name} />
+        </div>
+        <div className="comment-main-wrapper box-style">
+          <div className="comment-main">
+            <div className="header">
+              <div className="name">{element.user?.name}</div>
+              <div>{timeAgo}</div>
+              <div>{element?.changed ? "(changed)" : ""}</div>
             </div>
-          </div>
-          <div>
+            <div className="body">
+              <div className="text">{parse(element?.text)}</div>
+            </div>
+            <div className="footer">
+              <button className="btn" onClick={() => methods.like()}>
+                <p>{methods.reactionsCount().likes}</p>
+                <span
+                  className={`material-symbols-outlined bold icon ${
+                    element?.reaction?.[0]?.type === "like" && user?.id
+                      ? "filled"
+                      : ""
+                  }`}
+                >
+                  favorite
+                </span>
+              </button>
+              <button className="btn">Reply</button>
+            </div>
             {user && element.user.id === user?.id ? (
-              <Options
-                options={[
-                  {
-                    icon: "edit",
-                    label: "Edit",
-                    onClick: () => setEdit(true),
-                  },
-                  {
-                    icon: "delete",
-                    label: "Delete",
-                    onClick: () =>
-                      dispatch(
-                        postApi.comments.delete({
-                          id: element.id,
-                          post_id,
-                        })
-                      ),
-                  },
-                ]}
-              />
+              <div className="options">
+                <button
+                  className="custom-btn secondary"
+                  onClick={() => {
+                    dispatch(setCommentEditor({ element, open: true }));
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  className="custom-btn secondary red"
+                  onClick={() => {
+                    dispatch(
+                      postApi.comments.delete({
+                        id: element.id,
+                        post_id,
+                      })
+                    );
+
+                    dispatch(setCommentEditor({ element: null, open: false }));
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
             ) : null}
           </div>
-        </Content>
-      )}
+        </div>
+      </Content>
     </Container>
   );
 };
 
 export default Comment;
 
-const Container = styled.div``;
+const Container = styled.div`
+  margin: 15px 0;
+`;
 
 const Content = styled.div`
-  padding: 15px 0;
   color: var(--text-color);
   display: flex;
   align-items: flex-start;
 
   .img {
-    height: 30px;
-    min-width: 30px;
+    height: 50px;
+    min-width: 50px;
     margin-right: 15px;
     border-radius: 50%;
     overflow: hidden;
     background: var(--element-background);
 
     .alt {
-      font-size: 16px;
+      font-size: 22px;
     }
   }
 
@@ -244,13 +226,25 @@ const Content = styled.div`
           justify-content: center;
           align-items: center;
           cursor: pointer;
-          font-size: 13px;
+          font-size: 14px;
           color: var(--title-color);
           font-family: var(--font-regular);
 
           .icon {
             font-size: 20px;
+            color: #ff3333;
           }
+        }
+      }
+
+      .options {
+        display: flex;
+        column-gap: 5px;
+        margin-top: 15px;
+
+        .custom-btn {
+          padding: 0 15px;
+          height: 35px;
         }
       }
     }

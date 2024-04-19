@@ -62,7 +62,8 @@ const Content = styled.div`
   height: 100%;
   width: 100%;
   padding: 0 12px;
-  border-radius: 50px;
+  border-radius: 100px;
+  border: 1px solid var(--border-color-dark);
   background-color: var(--element-background);
   display: flex;
   justify-content: space-between;
