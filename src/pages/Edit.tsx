@@ -52,7 +52,7 @@ const Edit: FC = () => {
         <Content>
           <h1 className="title">Create new post</h1>
           <div className="input-wrapper">
-            <p className="label">Title</p>
+            <p className="label">Category</p>
             <input
               className="input"
               type="text"
@@ -82,7 +82,9 @@ const Edit: FC = () => {
             />
           </div>
           <div className="btn-group">
-            <button onClick={() => submit()}>Confirm Edit</button>
+            <button onClick={() => submit()} className="custom-btn">
+              Submit
+            </button>
           </div>
         </Content>
       </Container>
@@ -92,7 +94,7 @@ const Edit: FC = () => {
 export default Edit;
 
 const Container = styled.div`
-  padding: 40px 20px;
+  padding: 100px 20px;
 `;
 
 const Content = styled.div`
@@ -125,6 +127,7 @@ const Content = styled.div`
       font-family: var(--font-regular);
       color: var(--text-color);
       border-radius: 5px;
+      background: var(--element-background);
     }
   }
 
@@ -132,30 +135,23 @@ const Content = styled.div`
     display: flex;
     justify-content: flex-end;
 
-    button {
-      padding: 8px 30px;
-      font-size: 14px;
-      font-family: var(--font-medium);
-      color: var(--text-color);
-      font-weight: normal;
-      border: 1px solid var(--border-color);
-      cursor: pointer;
-      border-radius: 5px;
-
-      &:hover {
-        background: var(--element-color);
-        color: white;
-      }
+    .custom-btn {
+      padding: 0 25px;
     }
   }
 
   .quill {
+    background: var(--element-background);
+    border-radius: 1em;
+
     .ql-toolbar {
-      border-color: var(--border-color);
+      border: none;
+      border-bottom: 1px solid var(--border-color);
     }
 
     .ql-container {
-      border-color: var(--border-color);
+      border: none;
+      min-height: 300px;
     }
 
     .ql-editor {
