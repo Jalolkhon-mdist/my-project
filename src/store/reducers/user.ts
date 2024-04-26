@@ -90,8 +90,10 @@ const authUser = createAsyncThunk("authUser", async (_, { dispatch }) => {
 const getMetadata = createAsyncThunk("getMetadata", async (id: string) => {
   const { data } = await supabase
     .from("user_metadata")
-    .select("*")
+    .select("*,  liked: post_reactions(count), posts(count), comments(count)")
     .eq("id", id);
+
+  console.log(data);
 
   if (!data) return null;
 

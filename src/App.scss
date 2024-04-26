@@ -187,6 +187,30 @@ body {
   }
 }
 
+.custom-btn-gray {
+  background: var(--content-background-dark);
+  color: var(--title-color);
+  border-radius: 100px;
+  cursor: pointer;
+  padding: 5px;
+  display: inline-flex;
+  align-items: center;
+
+  &:hover {
+    background: var(--element-color);
+    color: white;
+
+    .icon {
+      color: white;
+    }
+  }
+
+  .icon {
+    font-size: 25px;
+    color: var(--text-color);
+  }
+}
+
 .icon-btn {
   background: var(--element-background-hover);
   border: none;

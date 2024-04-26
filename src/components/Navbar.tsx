@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { RootState } from "store";
 import UserImage from "./UserImage";
-import logo from "../assets/img/4eea21a0dd0608a47514986c7a755225c9c025ee.jpeg";
 import utils from "utils";
 
 const Navbar: FC = () => {
@@ -18,7 +17,10 @@ const Navbar: FC = () => {
           <div className="left">
             <div className="logo">
               <NavLink to={"/"}>
-                <img src={logo} alt="" />
+                <strong className="left">SC</strong>
+                <strong>
+                  Social <br /> Club
+                </strong>
               </NavLink>
             </div>
             <ul className="group-list">
@@ -111,6 +113,24 @@ const Content = styled.div`
 
     .logo {
       height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      a {
+        color: var(--title-color);
+        text-transform: uppercase;
+        display: flex;
+
+        .left {
+          font-size: 38px;
+          line-height: 0;
+          color: var(--element-color);
+          border-right: 1px solid var(--border-color-dark);
+          padding: 5px;
+          margin-right: 5px;
+        }
+      }
 
       img {
         height: 100%;

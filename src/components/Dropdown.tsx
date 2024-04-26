@@ -26,6 +26,14 @@ const Container = styled.div`
   border-bottom-right-radius: 0;
   z-index: 900;
   display: none;
+  animation: dropdown-up 0.5s forwards;
+  transform: translateY(100%);
+
+  @keyframes dropdown-up {
+    100% {
+      transform: translateY(0);
+    }
+  }
 
   &[data-open="true"] {
     display: block;

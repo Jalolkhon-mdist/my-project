@@ -4,80 +4,126 @@ import styled from "styled-components";
 import "react-quill/dist/quill.snow.css";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "store";
-import { Navigate, useNavigate } from "react-router-dom";
 import { Select } from "antd";
 import utils from "utils";
-import { postApi } from "store/reducers/post";
+import { postApi, setCreateModal } from "store/reducers/post";
+import Dropdown from "../components/Dropdown";
 
 const Create: FC = () => {
   const dispatch = useDispatch() as AppDispatch;
-  const navigate = useNavigate();
+  const open = useSelector((state: RootState) => state.post.createModal.open);
   const user = useSelector((state: RootState) => state.user.data);
-  const [post, setPost] = useState({ title: "", content: "", category: [] });
+  const [post, setPost] = useState({ title: "", content: "", category: "" });
 
   if (!user?.id) {
-    return <Navigate to={"/login"} />;
+    return;
   }
-
-  const categories = utils.categories.map((e) => {
-    return { value: e.label, label: e.label };
-  });
 
   async function submit() {
     await dispatch(postApi.post(post));
-    navigate(`/profile/${user?.id}`);
+    location.reload();
   }
 
   return (
-    <Container className="container">
-      <Content>
-        <h1 className="title">Create new post</h1>
-        <div className="input-wrapper">
-          <p className="label">Category</p>
-          <input
-            className="input"
-            type="text"
-            value={post.title}
-            onChange={(e) => setPost({ ...post, title: e.target.value })}
-          />
-        </div>
-        <div className="input-wrapper">
-          <p className="label">Content</p>
-          <ReactQuill
-            value={post.content}
-            onChange={(e) => setPost({ ...post, content: e })}
-            modules={utils.editorConfig.modules}
-            formats={utils.editorConfig.formats}
-          />
-        </div>
-        <div className="input-wrapper">
-          <p className="label">Title</p>
-          <Select
-            options={categories}
-            mode="tags"
-            style={{ width: "100%" }}
-            value={post.category}
-            onChange={(e) => {
-              setPost({ ...post, category: e });
-            }}
-          />
-        </div>
-        <div className="btn-group">
-          <button onClick={() => submit()} className="custom-btn">
-            Submit
-          </button>
-        </div>
-      </Content>
-    </Container>
+    <Dropdown open={open}>
+      <Container className="container">
+        <Content>
+          <div className="toolbar">
+            <button>
+              <span
+                className="material-symbols-outlined"
+                onClick={() => {
+                  dispatch(setCreateModal({ open: false }));
+                }}
+              >
+                expand_more
+              </span>
+            </button>
+          </div>
+          <h1 className="title">Create new post</h1>
+          <div className="input-wrapper">
+            <p className="label">Title</p>
+            <input
+              className="input"
+              type="text"
+              value={post.title}
+              onChange={(e) => setPost({ ...post, title: e.target.value })}
+            />
+          </div>
+
+          <div className="input-wrapper">
+            <p className="label">Group</p>
+            <div className="categories-select">
+              <Select
+                showSearch={true}
+                style={{ width: "100%" }}
+                value={post.category}
+                getPopupContainer={(trigger) => trigger.parentElement}
+                onChange={(e) => {
+                  setPost({ ...post, category: e });
+                }}
+              >
+                {utils.categoriesList.flat().map((item: any, index: number) => {
+                  return (
+                    <Select.Option
+                      key={index}
+                      value={`${item.group}, ${item.category}`}
+                    >
+                      <div className="option">
+                        <div className="color" data-color={item?.color}></div>{" "}
+                        {item.group}{" "}
+                        <div className="color" data-color={item?.color}></div>{" "}
+                        {item.category}
+                      </div>
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </div>
+          </div>
+
+          <div className="input-wrapper">
+            <p className="label">Content</p>
+            <ReactQuill
+              value={post.content}
+              onChange={(e) => setPost({ ...post, content: e })}
+              modules={utils.editorConfig.modules}
+              formats={utils.editorConfig.formats}
+            />
+          </div>
+          <div className="btn-group">
+            <button
+              onClick={() => dispatch(setCreateModal({ open: false }))}
+              className="custom-btn red secondary"
+            >
+              Close
+            </button>
+            <button onClick={() => submit()} className="custom-btn">
+              Submit
+            </button>
+          </div>
+        </Content>
+      </Container>
+    </Dropdown>
   );
 };
 
 export default Create;
 
 const Container = styled.div`
-  padding: 100px 20px;
+  padding: 0;
+  padding-bottom: 10px;
 `;
 const Content = styled.div`
+  .toolbar {
+    display: flex;
+    justify-content: flex-end;
+
+    button {
+      cursor: pointer;
+    }
+  }
+
   .title {
     font-size: 20px;
     color: var(--title-color);
@@ -90,6 +136,40 @@ const Content = styled.div`
     width: 100%;
     margin-bottom: 20px;
 
+    .categories-select {
+      .option {
+        display: flex;
+        align-items: center;
+        column-gap: 7px;
+
+        .color {
+          height: 10px;
+          aspect-ratio: 1/1;
+          border-radius: 50%;
+        }
+
+        .color[data-color="red"] {
+          background: var(--red-color);
+        }
+
+        .color[data-color="blue"] {
+          background: var(--blue-color);
+        }
+
+        .color[data-color="green"] {
+          background: var(--green-color);
+        }
+
+        .color[data-color="purple"] {
+          background: var(--purple-color);
+        }
+
+        .color[data-color="orange"] {
+          background: var(--orange-color);
+        }
+      }
+    }
+
     .label {
       font-size: 14px;
       font-family: var(--font-medium);
@@ -100,7 +180,7 @@ const Content = styled.div`
     .input {
       width: 100%;
       background: none;
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border-color-dark);
       outline: none;
       padding: 7px 10px;
       font-size: 14px;
@@ -114,6 +194,7 @@ const Content = styled.div`
   .btn-group {
     display: flex;
     justify-content: flex-end;
+    column-gap: 7px;
 
     .custom-btn {
       padding: 0 25px;
@@ -123,18 +204,19 @@ const Content = styled.div`
   .quill {
     background: var(--element-background);
     border-radius: 1em;
+    border: 1px solid var(--border-color-dark);
 
     .ql-toolbar {
       border: none;
-      border-bottom: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color-dark);
     }
 
     .ql-container {
       border: none;
-      min-height: 300px;
     }
 
     .ql-editor {
+      min-height: 300px;
       color: var(--text-color);
     }
   }

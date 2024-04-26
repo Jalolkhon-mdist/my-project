@@ -24,6 +24,13 @@ interface PostState {
     count: { [key: string]: number };
     loading: boolean;
   };
+  createModal: {
+    open: boolean;
+  };
+  editModal: {
+    open: boolean;
+    id: string | null;
+  };
 }
 
 const post = createSlice({
@@ -46,6 +53,13 @@ const post = createSlice({
       data: {},
       count: {},
       loading: false,
+    },
+    createModal: {
+      open: false,
+    },
+    editModal: {
+      open: false,
+      id: null,
     },
   } as PostState,
   reducers: {
@@ -101,6 +115,15 @@ const post = createSlice({
           comment.reaction = [{ type }];
         }
       }
+    },
+    setCreateModal(state, action: PayloadAction<{ open: boolean }>) {
+      state.createModal = action.payload;
+    },
+    setEditModal(
+      state,
+      action: PayloadAction<{ open: boolean; id: string | null }>
+    ) {
+      state.editModal = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -250,6 +273,7 @@ const post = createSlice({
         }
       }
     });
+
     builder.addCase(DeleteComment.fulfilled, (state, action) => {
       if (action.payload) {
         const { data, id, key } = action.payload;
@@ -263,23 +287,12 @@ const post = createSlice({
         }
       }
     });
+
     builder.addCase(getPostList.fulfilled, (state, action) => {
       if (action.payload) {
         const { data } = action.payload;
 
-        state.list.data = state.list.data || [];
-
-        const uniqueSet = new Set(
-          state.list.data.map((e) => JSON.stringify(e))
-        );
-
-        data.forEach((item) => {
-          if (!uniqueSet.has(JSON.stringify(item))) {
-            uniqueSet.add(JSON.stringify(item));
-          }
-        });
-
-        state.list.data = Array.from(uniqueSet, (e) => JSON.parse(e));
+        state.list.data = data;
       }
     });
   },
@@ -293,6 +306,8 @@ export const {
   setPostCount,
   setPostReaction,
   setCommentReaction,
+  setCreateModal,
+  setEditModal,
 } = post.actions;
 
 export default post.reducer;
@@ -303,24 +318,36 @@ const config = {
 };
 
 /********************************************************************************************************************/
-const getPostList = createAsyncThunk("getPostList", async () => {
-  try {
-    const { data, error } = await supabase
-      .from("posts")
-      .select(
-        `*, user: user_metadata(*), likes: post_reactions(count), dislikes: post_reactions(count), comments: comments(count)`
-      )
-      .eq("likes.type", "like")
-      .eq("dislikes.type", "like");
-    if (data) {
-      return { data };
-    } else {
-      throw error;
+const getPostList = createAsyncThunk(
+  "getPostList",
+  async (args: { category: string | undefined }) => {
+    const { category } = args;
+
+    try {
+      let query = supabase
+        .from("posts")
+        .select(
+          `*, user: user_metadata(*), likes: post_reactions(count), dislikes: post_reactions(count), comments: comments(count)`
+        )
+        .eq("likes.type", "like")
+        .eq("dislikes.type", "like")
+        .order("id", { ascending: false });
+
+      if (category) {
+        query.ilike("category", category);
+      }
+
+      const { data, error } = await query;
+      if (data) {
+        return { data };
+      } else {
+        throw error;
+      }
+    } catch (e) {
+      console.log(e);
     }
-  } catch (e) {
-    console.log(e);
   }
-});
+);
 
 const getPost = createAsyncThunk(
   "getPost",
@@ -387,7 +414,7 @@ const deletePost = createAsyncThunk(
 const postPost = createAsyncThunk(
   "postPost",
   async (
-    post: { title: string; content: string; category: string[] },
+    post: { title: string; content: string; category: string },
     { getState }
   ) => {
     const state = getState() as RootState;

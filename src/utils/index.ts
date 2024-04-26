@@ -102,6 +102,17 @@ const categories = [
   },
 ];
 
+const categoriesList: any = [];
+
+categories.forEach((e) => {
+  const returnVal: any = [];
+  e.value.forEach((k) => {
+    returnVal.push({ group: e.label, category: k.label, color: e.color });
+  });
+
+  categoriesList.push(returnVal);
+});
+
 const utils = {
   count(count: number) {
     if (!count && count !== 0) return;
@@ -228,6 +239,7 @@ const utils = {
     },
   },
   categories,
+  categoriesList,
 };
 
 export default utils;

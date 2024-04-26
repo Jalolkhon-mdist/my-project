@@ -4,13 +4,14 @@ import { UIContext } from "ui";
 
 interface Props {
   options: {
-    icon: string;
+    icon?: string;
     label: string;
     onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   }[];
+  parent?: any;
 }
 
-const Options: FC<Props> = ({ options }) => {
+const Options: FC<Props> = ({ options, parent }) => {
   const { id, setId } = useContext(UIContext);
   const [uid] = useState(Math.random() * 1000000 + Math.random() * 50000);
   const open = uid === id;
@@ -20,30 +21,27 @@ const Options: FC<Props> = ({ options }) => {
       <Content>
         <div className="options-wrapper">
           <button
-            className="options-button"
+            className="options-button options-header"
             onClick={(e) => {
               e.stopPropagation();
               !open ? setId(uid) : setId(0);
             }}
           >
-            <span className="material-symbols-outlined icon">more_vert</span>
+            {parent ?? (
+              <span className="material-symbols-rounded icon">more_vert</span>
+            )}
           </button>
           {open ? (
-            <div className="options-list-wrapper">
+            <div className="options-list-wrapper options-body">
               <div className="options-list">
                 {options?.map((item, index) => {
                   return (
                     <button
                       className="option"
                       key={index}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (item.onClick) {
-                          item.onClick(e);
-                        }
-                      }}
+                      onClick={item.onClick}
                     >
-                      <span className="material-symbols-outlined icon">
+                      <span className="material-symbols-rounded icon">
                         {item.icon}
                       </span>{" "}
                       {item.label}
@@ -104,6 +102,7 @@ const Content = styled.div`
           font-family: var(--font-regular);
           color: var(--text-color);
           font-size: 14px;
+          white-space: nowrap;
 
           &:hover {
             background: var(--element-background-hover);

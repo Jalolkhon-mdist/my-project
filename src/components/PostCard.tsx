@@ -3,9 +3,8 @@ import styled from "styled-components";
 import utils from "utils";
 import parse from "html-react-parser";
 import { useNavigate } from "react-router-dom";
-import Options from "../ui/Options";
 import { useDispatch, useSelector } from "react-redux";
-import { postApi } from "store/reducers/post";
+import { postApi, setEditModal } from "store/reducers/post";
 import { AppDispatch, RootState } from "store";
 import { UIContext } from "ui";
 
@@ -26,7 +25,7 @@ const PostCard: FC<Props> = ({ elem }) => {
       setId(0);
     },
     update: async function () {
-      navigate(`/edit/${elem.id}`);
+      dispatch(setEditModal({ open: true, id: elem?.id }));
       setId(0);
     },
   };
@@ -39,26 +38,6 @@ const PostCard: FC<Props> = ({ elem }) => {
           onClick={() => navigate(`/post/${elem.id}`)}
         >
           <div className="post-container">
-            {/*  */}
-            <div className="options">
-              {elem.user_id === user?.id ? (
-                <Options
-                  options={[
-                    {
-                      icon: "edit",
-                      label: "Update",
-                      onClick: () => methods.update(),
-                    },
-                    {
-                      icon: "delete",
-                      label: "Delete",
-                      onClick: () => methods.delete(),
-                    },
-                  ]}
-                />
-              ) : null}
-            </div>
-            {/*  */}
             <div className="user">
               <div className="user-left">
                 <div className="user-img">
@@ -78,39 +57,58 @@ const PostCard: FC<Props> = ({ elem }) => {
               </div>
             </div>
             <h3 className="title">{elem.title}</h3>
-            <div className="post-content">{parse(elem.content)}</div>
-            <div className="post-details">
-              <div className="group">
-                <button className="group-btn">
+            <div className="post-content-wrapper">
+              <div className="post-content">{parse(elem.content)}</div>
+              {user && elem.user.id === user?.id ? (
+                <div className="post-options">
+                  <button
+                    className="custom-btn secondary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      methods.update();
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="custom-btn secondary red"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      methods.delete();
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              ) : null}
+            </div>
+            <div className="post-info">
+              <div className="info-group">
+                <div className="info">
+                  <p>{elem?.likes?.[0]?.count}</p>
                   <span
                     className={`material-symbols-outlined icon ${
-                      reaction === "like" && "filled"
+                      reaction?.type === "like" && "filled"
                     }`}
                   >
-                    thumb_up
+                    favorite
                   </span>
-                </button>
-                <p>{utils.count(elem?.likes?.[0]?.count)}</p>
-                <button className="group-btn">
-                  <span
-                    className={`material-symbols-outlined icon ${
-                      reaction === "dislike" && "filled"
-                    }`}
-                  >
-                    thumb_down
-                  </span>
-                </button>
+                </div>
               </div>
-              <button>
-                <span className="material-symbols-outlined icon">comment</span>
-                <p>{elem?.comments?.[0]?.count}</p>
-              </button>
-              <button>
-                <span className="material-symbols-outlined icon">
-                  ios_share
-                </span>
-                <p>Share</p>
-              </button>
+              <div className="info-group">
+                <div className="info">
+                  <p>{utils.timeAgo(elem.created_at)}</p>
+                  <span className="material-symbols-outlined icon">
+                    history
+                  </span>
+                </div>
+                <div className="info">
+                  <p>{elem?.comments?.[0]?.count}</p>
+                  <span className="material-symbols-outlined icon">
+                    chat_bubble
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -202,67 +200,87 @@ const Content = styled.div`
         font-size: 20px;
       }
 
-      .post-content {
-        width: 100%;
-        overflow: hidden;
+      .post-content-wrapper {
+        border-bottom: 1px solid var(--border-color);
+        padding: 10px 0;
         margin-bottom: 10px;
-        font-size: 15px;
-        color: var(--text-color);
+        width: 100%;
 
-        img {
-          height: 100%;
-          width: 100%;
-          object-fit: cover;
+        .post-content {
+          overflow: hidden;
+          font-size: 15px;
+          color: var(--text-color);
+
+          img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+          }
+        }
+
+        .post-options {
+          display: flex;
+          column-gap: 5px;
+          margin-top: 15px;
+
+          .custom-btn {
+            padding: 0 15px;
+            height: 35px;
+          }
         }
       }
 
-      .post-details {
-        margin-top: 10px;
+      .post-info {
         display: flex;
-        column-gap: 10px;
+        justify-content: space-between;
 
-        .group {
+        .info-group {
           display: flex;
-          align-items: center;
-          background: var(--element-background);
-          border-radius: 50px;
+          justify-content: flex-end;
+          column-gap: 10px;
 
-          p {
-            padding: 0 5px;
-            font-size: 13px;
-            font-family: var(--font-medium);
-            color: var(--title-color);
+          .info {
+            display: flex;
+            align-items: center;
+            background: var(--element-background);
+            border-radius: 50px;
+
+            p {
+              padding: 0 5px;
+              font-size: 13px;
+              font-family: var(--font-medium);
+              color: var(--title-color);
+            }
+
+            .icon {
+              font-size: 20px;
+              color: var(--title-color);
+            }
           }
 
-          .group-btn {
-            padding: 6px;
+          button {
+            display: flex;
+            align-items: center;
+            padding: 5px 10px;
+            background-color: var(--element-background);
+            border-radius: 50px;
             cursor: pointer;
-            border: none;
-          }
-        }
-
-        button {
-          display: flex;
-          align-items: center;
-          padding: 5px 10px;
-          background-color: var(--element-background);
-          border-radius: 50px;
-          cursor: pointer;
-          color: var(--title-color);
-
-          .icon {
-            font-size: 22px;
-          }
-
-          &:hover {
-            background: var(--element-background-hover);
-          }
-
-          p {
-            padding: 0 5px;
-            font-size: 13px;
-            font-family: var(--font-medium);
             color: var(--title-color);
+
+            .icon {
+              font-size: 22px;
+            }
+
+            &:hover {
+              background: var(--element-background-hover);
+            }
+
+            p {
+              padding: 0 5px;
+              font-size: 13px;
+              font-family: var(--font-medium);
+              color: var(--title-color);
+            }
           }
         }
       }

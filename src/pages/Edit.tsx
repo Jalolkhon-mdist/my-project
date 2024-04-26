@@ -1,103 +1,156 @@
-import { Select } from "antd";
-import { supabase } from "backend";
 import { FC, useEffect, useState } from "react";
 import ReactQuill from "react-quill";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
-import { AppDispatch, RootState } from "store";
-import { postApi } from "store/reducers/post";
 import styled from "styled-components";
+import "react-quill/dist/quill.snow.css";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "store";
+import { Select } from "antd";
 import utils from "utils";
+import { postApi, setEditModal } from "store/reducers/post";
+import Dropdown from "../components/Dropdown";
+import { supabase } from "backend";
 
 const Edit: FC = () => {
-  const [post, setPost] = useState<null | any>(null);
   const dispatch = useDispatch() as AppDispatch;
-  const navigate = useNavigate();
-  const id = useParams()?.id;
+  const open = useSelector((state: RootState) => state.post.editModal.open);
+  const id = useSelector((state: RootState) => state.post.editModal.id);
   const user = useSelector((state: RootState) => state.user.data);
+  const [post, setPost] = useState<any>(null);
 
   useEffect(() => {
-    function fetchData() {
+    if (id) {
       supabase
         .from("posts")
         .select("*")
         .eq("id", id)
-        .then(({ data }) => {
-          if (data) {
-            if (data[0]?.user_id !== user?.id) {
-              navigate("/login");
-              return;
-            } else {
-              setPost(data[0]);
-            }
+        .then((response) => {
+          if (response.data?.[0]) {
+            setPost(response.data[0]);
           }
         });
     }
+  }, [id]);
 
-    fetchData();
-  }, []);
-
-  const categories = utils.topics.map((e) => {
-    return { value: e.name, label: e.name };
-  });
-
-  async function submit() {
-    await dispatch(postApi.update({ id: post.id, post }));
-    navigate(`/profile/${user?.id}`);
+  if (!user?.id || !id) {
+    return;
   }
 
-  if (post && post.user_id === user?.id)
+  async function submit() {
+    await dispatch(postApi.update({ id: id!, post }));
+    location.reload();
+  }
+
+  if (post)
     return (
-      <Container className="container">
-        <Content>
-          <h1 className="title">Create new post</h1>
-          <div className="input-wrapper">
-            <p className="label">Category</p>
-            <input
-              className="input"
-              type="text"
-              value={post.title}
-              onChange={(e) => setPost({ ...post, title: e.target.value })}
-            />
-          </div>
-          <div className="input-wrapper">
-            <p className="label">Content</p>
-            <ReactQuill
-              value={post.content}
-              onChange={(e) => setPost({ ...post, content: e })}
-              modules={utils.editorConfig.modules}
-              formats={utils.editorConfig.formats}
-            />
-          </div>
-          <div className="input-wrapper">
-            <p className="label">Title</p>
-            <Select
-              options={categories}
-              mode="tags"
-              style={{ width: "100%" }}
-              value={post.category}
-              onChange={(e) => {
-                setPost({ ...post, category: e });
-              }}
-            />
-          </div>
-          <div className="btn-group">
-            <button onClick={() => submit()} className="custom-btn">
-              Submit
-            </button>
-          </div>
-        </Content>
-      </Container>
+      <Dropdown open={open}>
+        <Container className="container">
+          <Content>
+            <div className="toolbar">
+              <button>
+                <span
+                  className="material-symbols-outlined"
+                  onClick={() => {
+                    dispatch(setEditModal({ open: false, id: null }));
+                  }}
+                >
+                  expand_more
+                </span>
+              </button>
+            </div>
+            <h1 className="title">Create new post</h1>
+            <div className="input-wrapper">
+              <p className="label">Title</p>
+              <input
+                className="input"
+                type="text"
+                value={post.title}
+                onChange={(e) => setPost({ ...post, title: e.target.value })}
+              />
+            </div>
+
+            <div className="input-wrapper">
+              <p className="label">Group</p>
+              <div className="categories-select">
+                <Select
+                  showSearch={true}
+                  style={{ width: "100%" }}
+                  value={post.category}
+                  getPopupContainer={(trigger) => trigger.parentElement}
+                  onChange={(e) => {
+                    setPost({ ...post, category: e });
+                  }}
+                >
+                  {utils.categoriesList
+                    .flat()
+                    .map((item: any, index: number) => {
+                      return (
+                        <Select.Option
+                          key={index}
+                          value={`${item.group}, ${item.category}`}
+                        >
+                          <div className="option">
+                            <div
+                              className="color"
+                              data-color={item?.color}
+                            ></div>{" "}
+                            {item.group}{" "}
+                            <div
+                              className="color"
+                              data-color={item?.color}
+                            ></div>{" "}
+                            {item.category}
+                          </div>
+                        </Select.Option>
+                      );
+                    })}
+                </Select>
+              </div>
+            </div>
+
+            <div className="input-wrapper">
+              <p className="label">Content</p>
+              <ReactQuill
+                value={post.content}
+                onChange={(e) => setPost({ ...post, content: e })}
+                modules={utils.editorConfig.modules}
+                formats={utils.editorConfig.formats}
+              />
+            </div>
+            <div className="btn-group">
+              <button
+                onClick={() =>
+                  dispatch(setEditModal({ open: false, id: null }))
+                }
+                className="custom-btn red secondary"
+              >
+                Close
+              </button>
+              <button onClick={() => submit()} className="custom-btn">
+                Submit
+              </button>
+            </div>
+          </Content>
+        </Container>
+      </Dropdown>
     );
 };
 
 export default Edit;
 
 const Container = styled.div`
-  padding: 100px 20px;
+  padding: 0;
+  padding-bottom: 10px;
 `;
-
 const Content = styled.div`
+  .toolbar {
+    display: flex;
+    justify-content: flex-end;
+
+    button {
+      cursor: pointer;
+    }
+  }
+
   .title {
     font-size: 20px;
     color: var(--title-color);
@@ -110,6 +163,40 @@ const Content = styled.div`
     width: 100%;
     margin-bottom: 20px;
 
+    .categories-select {
+      .option {
+        display: flex;
+        align-items: center;
+        column-gap: 7px;
+
+        .color {
+          height: 10px;
+          aspect-ratio: 1/1;
+          border-radius: 50%;
+        }
+
+        .color[data-color="red"] {
+          background: var(--red-color);
+        }
+
+        .color[data-color="blue"] {
+          background: var(--blue-color);
+        }
+
+        .color[data-color="green"] {
+          background: var(--green-color);
+        }
+
+        .color[data-color="purple"] {
+          background: var(--purple-color);
+        }
+
+        .color[data-color="orange"] {
+          background: var(--orange-color);
+        }
+      }
+    }
+
     .label {
       font-size: 14px;
       font-family: var(--font-medium);
@@ -120,7 +207,7 @@ const Content = styled.div`
     .input {
       width: 100%;
       background: none;
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border-color-dark);
       outline: none;
       padding: 7px 10px;
       font-size: 14px;
@@ -134,6 +221,7 @@ const Content = styled.div`
   .btn-group {
     display: flex;
     justify-content: flex-end;
+    column-gap: 7px;
 
     .custom-btn {
       padding: 0 25px;
@@ -143,18 +231,19 @@ const Content = styled.div`
   .quill {
     background: var(--element-background);
     border-radius: 1em;
+    border: 1px solid var(--border-color-dark);
 
     .ql-toolbar {
       border: none;
-      border-bottom: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color-dark);
     }
 
     .ql-container {
       border: none;
-      min-height: 300px;
     }
 
     .ql-editor {
+      min-height: 300px;
       color: var(--text-color);
     }
   }

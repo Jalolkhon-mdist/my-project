@@ -1,20 +1,31 @@
-import { FC } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "store";
+import { FC, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "store";
 import styled from "styled-components";
 import PostCard from "../components/PostCard";
 import Searchbar from "../components/Searchbar";
-import Aside from "../components/Aside";
-import { Link } from "react-router-dom";
+import Aside from "../components/AsideLeft";
+import { postApi, setCreateModal } from "store/reducers/post";
+import useSearchParams from "../hooks/useSearchParams";
+import AsideRight from "../components/AsideRight";
+import { useLocation } from "react-router-dom";
 
 const PostList: FC = () => {
+  const dispatch = useDispatch() as AppDispatch;
+  const location = useLocation();
+  const searchParams = useSearchParams();
   const posts = useSelector((state: RootState) => state.post.list.data);
+  const category = searchParams.get("category");
+
+  useEffect(() => {
+    dispatch(postApi.list.get({ category }));
+  }, [location.search]);
 
   return (
     <Container>
       <Content>
         <div className="header">
-          <h1 className="title">Welcome to CommunityClub.com™</h1>
+          <h1 className="title">Welcome to Social Club</h1>
           <p className="subtitle">
             Give & receive support in more than 50 support groups. Use the
             search bar below to find a group or search the entire site.
@@ -27,7 +38,17 @@ const PostList: FC = () => {
               <Aside />
             </div>
             <div className="center">
-              <h2>Latest Topics</h2>
+              <div className="center-header">
+                <h2>Latest Topics</h2>
+                <button
+                  className="custom-btn"
+                  onClick={() => {
+                    dispatch(setCreateModal({ open: true }));
+                  }}
+                >
+                  New Post
+                </button>
+              </div>
               <ul className="post-list">
                 {posts?.map((elem, key) => {
                   return (
@@ -38,18 +59,8 @@ const PostList: FC = () => {
                 })}
               </ul>
             </div>
-            <div className="right box-style">
-              <h2 className="title">Welcome</h2>
-              <p className="text">
-                Tired of scrolling through the same posts? When you create an
-                account you’ll always come back to where you left off. With an
-                account you can also be notified of new replies, save bookmarks,
-                and use likes to thank others. We can all work together to make
-                this community great.
-              </p>
-              <Link to={`login?type=sign-up`} className="custom-btn">
-                Sign Up
-              </Link>
+            <div className="right">
+              <AsideRight />
             </div>
           </div>
         </Main>
@@ -108,6 +119,11 @@ const Main = styled.div`
 
     .center {
       width: 100%;
+
+      .center-header {
+        display: flex;
+        justify-content: space-between;
+      }
     }
 
     .right {
