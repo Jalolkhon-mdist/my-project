@@ -27,7 +27,7 @@ const Aside: FC = () => {
               }
             }}
           >
-            <Select.Option>
+            <Select.Option value="">
               <div className="option">All</div>
             </Select.Option>
             {utils.categoriesList.flat().map((item: any, index: number) => {
@@ -50,6 +50,35 @@ const Aside: FC = () => {
         <Link to={`/g`} className="custom-btn secondary">
           Join Groups
         </Link>
+        <div className="link-list">
+          <button
+            className="link"
+            onClick={() => {
+              if (!category) {
+                setSearchParams(`order-by=latest`);
+              } else {
+                setSearchParams(`category=${category}&order-by=latest`);
+              }
+            }}
+            data-page={searchParams.get("order-by") !== "top"}
+          >
+            Latest
+          </button>
+
+          <button
+            className="link"
+            onClick={() => {
+              if (!category) {
+                setSearchParams(`order-by=top`);
+              } else {
+                setSearchParams(`category=${category}&order-by=top`);
+              }
+            }}
+            data-page={searchParams.get("order-by") === "top"}
+          >
+            Top
+          </button>
+        </div>
       </Content>
     </Container>
   );
@@ -122,5 +151,25 @@ const Content = styled.div`
   .custom-btn {
     width: 100%;
     font-size: 16px;
+  }
+
+  .link-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 30px;
+
+    .link {
+      color: var(--text-color);
+      font-size: 17px;
+      padding: 7px;
+      margin: 5px 0;
+      font-family: var(--font-regular);
+
+      &[data-page="true"] {
+        color: var(--element-color);
+        border-bottom: 4px solid var(--element-color);
+      }
+    }
   }
 `;

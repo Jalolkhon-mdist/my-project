@@ -93,8 +93,6 @@ const getMetadata = createAsyncThunk("getMetadata", async (id: string) => {
     .select("*,  liked: post_reactions(count), posts(count), comments(count)")
     .eq("id", id);
 
-  console.log(data);
-
   if (!data) return null;
 
   return data[0];

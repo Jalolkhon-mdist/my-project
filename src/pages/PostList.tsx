@@ -6,20 +6,20 @@ import PostCard from "../components/PostCard";
 import Searchbar from "../components/Searchbar";
 import Aside from "../components/AsideLeft";
 import { postApi, setCreateModal } from "store/reducers/post";
-import useSearchParams from "../hooks/useSearchParams";
 import AsideRight from "../components/AsideRight";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 const PostList: FC = () => {
   const dispatch = useDispatch() as AppDispatch;
   const location = useLocation();
-  const searchParams = useSearchParams();
+  const [searchParams] = useSearchParams();
   const posts = useSelector((state: RootState) => state.post.list.data);
   const category = searchParams.get("category");
+  const orderBy = searchParams.get("order-by");
 
   useEffect(() => {
-    dispatch(postApi.list.get({ category }));
-  }, [location.search]);
+    dispatch(postApi.list.get({ category, order: orderBy }));
+  }, [location.search, searchParams]);
 
   return (
     <Container>
@@ -39,7 +39,11 @@ const PostList: FC = () => {
             </div>
             <div className="center">
               <div className="center-header">
-                <h2>Latest Topics</h2>
+                {orderBy === "top" ? (
+                  <h2>Top Topics</h2>
+                ) : (
+                  <h2>Latest Topics</h2>
+                )}
                 <button
                   className="custom-btn"
                   onClick={() => {

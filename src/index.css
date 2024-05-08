@@ -15,6 +15,7 @@
   --font-bold: "font-bold";
 
   --element-background: var(--main-background);
+  --secondary-element-background: #f8f8f8;
   --element-background-hover: #dde1e3;
   --content-background-dark: #d6dee1;
   --element-color: #309a45;

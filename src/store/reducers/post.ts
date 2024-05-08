@@ -320,18 +320,26 @@ const config = {
 /********************************************************************************************************************/
 const getPostList = createAsyncThunk(
   "getPostList",
-  async (args: { category: string | undefined }) => {
-    const { category } = args;
+  async (args: {
+    category: string | undefined | null;
+    order?: string | null;
+  }) => {
+    const { category, order } = args;
 
     try {
       let query = supabase
         .from("posts")
         .select(
-          `*, user: user_metadata(*), likes: post_reactions(count), dislikes: post_reactions(count), comments: comments(count)`
+          `*, user: user_metadata(*), views(count), likes: post_reactions(count), dislikes: post_reactions(count), comments: comments(count)`
         )
         .eq("likes.type", "like")
-        .eq("dislikes.type", "like")
-        .order("id", { ascending: false });
+        .eq("dislikes.type", "like");
+
+      if (order === "top") {
+        query.order("count", { ascending: false, referencedTable: "likes" });
+      } else {
+        query.order("id", { ascending: false });
+      }
 
       if (category) {
         query.ilike("category", category);
@@ -357,7 +365,7 @@ const getPost = createAsyncThunk(
     const user_id = state.user.data?.id;
 
     let selectString = `*, user: user_metadata(*), 
-    likes: post_reactions(count), dislikes: post_reactions(count), comments: comments(count)`;
+    likes: post_reactions(count), views(count), viewed: views(user_id), dislikes: post_reactions(count), comments: comments(count)`;
 
     if (user_id) {
       selectString += `, reaction: post_reactions(type)`;
@@ -368,6 +376,7 @@ const getPost = createAsyncThunk(
       .select(selectString)
       .eq("id", id)
       .eq("likes.type", "like")
+      .eq("viewed.user_id", user_id)
       .eq("dislikes.type", "dislike");
 
     if (user_id) {
@@ -375,6 +384,7 @@ const getPost = createAsyncThunk(
     }
 
     const { data, error }: any = await query;
+    console.log(data);
 
     return { key: id, data, error };
   }
