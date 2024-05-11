@@ -17,6 +17,8 @@ const Profile: FC = () => {
   const metadata = useSelector((state: RootState) => state.profile.data[id]);
   const user = useSelector((state: RootState) => state.user.data);
 
+  const joined = new Date(metadata?.created_at).toLocaleDateString();
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,28 +29,25 @@ const Profile: FC = () => {
     return (
       <Container>
         <Content>
-          <Header>
-            <div className="img">
-              <UserImage src={metadata?.img} alt={metadata?.name} />
+          <Header className="box-style">
+            <div className="user">
+              <div className="user-img">
+                <UserImage src={metadata?.img} alt={metadata?.name} />
+              </div>
+              <h1 className="user-name">{metadata?.name}</h1>
             </div>
-            <h1 className="name">{metadata?.name}</h1>
+            <div className="header-info-list">
+              <div className="header-info">
+                <div>Joined </div>
+                <span>{joined}</span>
+              </div>
+              <div className="header-info">
+                <div>Posts </div>
+                <span>{metadata?.posts?.length}</span>
+              </div>
+            </div>
           </Header>
           <Body>
-            <h2 className="title">Posts</h2>
-            <div className="add-btn-wrapper">
-              {metadata?.id === user?.id ? (
-                <button
-                  className="add-btn"
-                  onClick={() => {
-                    if (metadata?.id) {
-                      navigate("/create");
-                    }
-                  }}
-                >
-                  Add New Post
-                </button>
-              ) : null}
-            </div>
             <ul>
               {" "}
               {metadata?.posts
@@ -78,28 +77,52 @@ const Container = styled.div`
 const Content = styled.div``;
 
 const Header = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  column-gap: 30px;
-  align-items: center;
-  margin-bottom: 40px;
+  .user {
+    display: flex;
+    align-items: center;
+    column-gap: 20px;
+    margin-bottom: 20px;
 
-  .img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background: var(--element-background);
+    .user-img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: var(--element-color);
 
-    .alt {
-      font-size: 50px;
+      .alt {
+        font-size: 50px;
+        color: white;
+      }
+    }
+
+    .user-name {
+      font-size: 20px;
+      font-family: var(--font-medium);
+      font-weight: normal;
+      color: var(--title-color);
     }
   }
 
-  .name {
-    font-size: 20px;
-    font-family: var(--font-medium);
-    font-weight: normal;
-    color: var(--title-color);
+  .header-info-list {
+    display: flex;
+    align-items: center;
+    background: var(--content-background);
+    border-radius: 10px;
+    padding: 15px 10px;
+    column-gap: 15px;
+    row-gap: 10px;
+
+    .header-info {
+      color: var(--text-color);
+      font-size: 15px;
+      display: flex;
+      column-gap: 5px;
+
+      span {
+        color: var(--title-color);
+        font-family: var(--font-medium);
+      }
+    }
   }
 `;
 

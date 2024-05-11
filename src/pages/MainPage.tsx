@@ -28,7 +28,7 @@ const Home: FC = () => {
 export default Home;
 
 const Main = styled.main`
-  padding-top: var(--navbar-height);
+  /* padding-top: var(--navbar-height); */
 
   .main-content {
     max-width: 1440px;

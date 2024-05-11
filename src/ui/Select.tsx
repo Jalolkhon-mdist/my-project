@@ -4,8 +4,8 @@ import { UIContext } from "ui";
 
 interface Props {
   value: string;
-  options: { value: string | undefined; label: string }[];
-  onChange: (value: string | undefined) => void;
+  options: { value: string; label: string }[];
+  onChange?: (value: string) => void;
   width?: string | undefined;
   style?: React.CSSProperties;
 }
@@ -28,8 +28,10 @@ const Select: FC<Props> = ({
     setId(uid);
   }
 
-  function handleClick(params: { value: string | undefined; label: string }) {
-    onChange(params.value);
+  function handleClick(params: { value: string; label: string }) {
+    if (onChange) {
+      onChange(params.value);
+    }
     setLabel(params.label);
   }
 
@@ -39,17 +41,20 @@ const Select: FC<Props> = ({
   }
 
   return (
-    <Container style={style}>
+    <Container style={style} className="select-container">
       <Content $width={width}>
-        <Selected onClick={componentClick} className={open ? "opened" : ""}>
+        <Selected
+          onClick={componentClick}
+          className={`select-header ${open ? "opened" : ""}`}
+        >
           <p>{label}</p>
           <Icon className={open ? "opened" : ""}>
-            <span className="material-symbols-rounded">
+            <span className="material-symbols-rounded select-icon">
               keyboard_arrow_down
             </span>
           </Icon>
         </Selected>
-        <OptionsWrapper className={open ? "opened" : ""}>
+        <OptionsWrapper className={`select-body ${open ? "opened" : ""}`}>
           <List>
             {options.map((elem, idx) => {
               return (
@@ -76,8 +81,6 @@ const Select: FC<Props> = ({
 export default Select;
 
 const Container = styled.div`
-  margin: var(--input-margin);
-
   * {
     font-size: var(--input-font-size);
   }
@@ -93,7 +96,7 @@ const Content = styled.div<{ $width: string }>`
 const Selected = styled.button`
   width: 100%;
   display: flex;
-  background: none;
+  background: var(--element-background);
   justify-content: space-between;
   cursor: pointer;
   align-items: center;
@@ -103,10 +106,10 @@ const Selected = styled.button`
   padding: 5px 10px;
   padding-right: 6px;
   height: var(--input-height);
-  background: none;
   transition: 0.2s;
   color: var(--text-color);
   font-family: var(--text-font);
+  height: 100%;
 
   &.opened {
     border-color: var(--element-color);
@@ -136,11 +139,10 @@ const OptionsWrapper = styled.div`
   top: calc(100% + 3px);
   position: absolute;
   display: none;
-  background: var(--input-bg);
   z-index: 5;
-  background: var(--input-bg);
-  max-height: 150px;
+  max-height: 250px;
   overflow-y: scroll;
+  background: var(--element-background);
 
   &::-webkit-scrollbar {
     display: none;

@@ -37,6 +37,10 @@ html {
   background: var(--main-bg);
 }
 
+body {
+  padding-top: var(--navbar-height);
+}
+
 * {
   margin: 0;
   padding: 0;

@@ -1,14 +1,19 @@
 import { FC } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useSelector } from "react-redux";
-import { RootState } from "store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "store";
 import UserImage from "./UserImage";
 import utils from "utils";
+import Options from "../ui/Options";
+import { userApi } from "store/reducers/user";
+import { setCreateModal } from "store/reducers/post";
 
 const Navbar: FC = () => {
   const metadata = useSelector((state: RootState) => state.user.metadata);
   const user = useSelector((state: RootState) => state.user.data);
+  const navigate = useNavigate();
+  const dispatch = useDispatch() as AppDispatch;
 
   return (
     <Container id="Navbar">
@@ -47,13 +52,38 @@ const Navbar: FC = () => {
           {/*  */}
           <div className="right">
             {user?.id ? (
-              <div className="profile">
-                <Link to={`profile/${user?.id}`} data-profile>
-                  <div className="user-img">
-                    <UserImage src={metadata?.img} alt={metadata?.name} />
+              <Options
+                parent={
+                  <div className="account">
+                    <div className="account-img">
+                      <UserImage src={metadata?.img} alt={metadata?.name} />
+                    </div>
                   </div>
-                </Link>
-              </div>
+                }
+                options={[
+                  {
+                    label: "New post",
+                    icon: "add",
+                    onClick: () => {
+                      dispatch(setCreateModal({ open: true }));
+                    },
+                  },
+                  {
+                    label: "Profile",
+                    icon: "person",
+                    onClick: () => {
+                      navigate(`/profile/${user?.id}`);
+                    },
+                  },
+                  {
+                    label: "Log Out",
+                    icon: "logout",
+                    onClick: () => {
+                      dispatch(userApi.signOut());
+                    },
+                  },
+                ]}
+              />
             ) : (
               <ul className="link-list">
                 <li className="link">
@@ -196,14 +226,15 @@ const Content = styled.div`
   }
 
   .right {
-    .profile {
-      .user-img {
-        height: 30px;
+    .account {
+      .account-img {
+        height: 35px;
+        aspect-ratio: 1/1;
+        background: var(--element-color);
         border-radius: 50%;
-        background: var(--element-background);
-        border: 1px solid var(--border-color-light);
 
         .alt {
+          color: white;
           font-size: 16px;
         }
       }

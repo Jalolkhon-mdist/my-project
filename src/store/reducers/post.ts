@@ -376,11 +376,10 @@ const getPost = createAsyncThunk(
       .select(selectString)
       .eq("id", id)
       .eq("likes.type", "like")
-      .eq("viewed.user_id", user_id)
       .eq("dislikes.type", "dislike");
 
     if (user_id) {
-      query.eq("reaction.user_id", user_id);
+      query.eq("reaction.user_id", user_id).eq("viewed.user_id", user_id);
     }
 
     const { data, error }: any = await query;
