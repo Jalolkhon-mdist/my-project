@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { AppDispatch, RootState } from "store";
 import styled from "styled-components";
 import UserImage from "../components/UserImage";
@@ -15,11 +15,11 @@ const Profile: FC = () => {
   if (!id) return;
 
   const metadata = useSelector((state: RootState) => state.profile.data[id]);
-  const user = useSelector((state: RootState) => state.user.data);
+  // const user = useSelector((state: RootState) => state.user.data);
 
   const joined = new Date(metadata?.created_at).toLocaleDateString();
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(profileApi.get(id));
@@ -52,12 +52,12 @@ const Profile: FC = () => {
               {" "}
               {metadata?.posts
                 ? metadata.posts.map((elem: any, key: number) => {
-                    return (
-                      <li key={key}>
-                        <PostCard elem={elem} />
-                      </li>
-                    );
-                  })
+                  return (
+                    <li key={key}>
+                      <PostCard elem={elem} />
+                    </li>
+                  );
+                })
                 : null}
             </ul>
           </Body>
