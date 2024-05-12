@@ -58,7 +58,6 @@ const Searchbar: FC = () => {
               ref={inputRef}
               value={value}
               onFocus={() => setFocus(true)}
-              onBlur={() => setFocus(false)}
               onChange={(e) => setValue(e.target.value)}
             />
             {/*  */}
@@ -124,20 +123,24 @@ const Content = styled.div`
   .searchbar-list{
     background: var(--element-background);
     border: 1px solid var(--border-color-dark);
-    padding: 7px 12px;
     position: absolute;
     width: 100%;
+    padding: 5px 0;
     border-radius: 10px;
     top: calc(100% + 5px);
     display: flex;
     flex-direction: column;
 
     .searchbar-list-item{
-      padding: 7px 0;
+      padding: 5px 12px;
       color: var(--text-color);
       display: flex;
       align-items: center;
       column-gap: 7px;
+
+      &:hover{
+        background: var(--element-background-hover);
+      }
 
       .user-img{
         height: 25px;
