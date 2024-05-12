@@ -38,13 +38,11 @@ const getProfile = createAsyncThunk("getProfile", async (id: string) => {
     const { data } = await supabase
       .from("user_metadata")
       .select(
-        `*, posts(*, user: user_metadata(*), likes: post_reactions(count), dislikes: post_reactions(count))`
+        `*, posts(*, user: user_metadata(*), likes: post_reactions(count), dislikes: post_reactions(count), views(count)), postsCount: posts(count), liked: post_reactions(count)`
       )
       .eq("posts.likes.type", "dislike")
       .eq("posts.dislikes.type", "like")
       .eq("id", id);
-
-    console.log(data);
 
     if (data) {
       return { key: id, data };

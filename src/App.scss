@@ -138,6 +138,11 @@ body {
   }
 }
 
+.btn-group {
+  display: flex;
+  column-gap: 10px;
+}
+
 .custom-btn {
   border: none;
   background: none;
@@ -235,7 +240,6 @@ body {
 
   .icon {
     font-size: 20px;
-    line-height: 0;
   }
 }
 

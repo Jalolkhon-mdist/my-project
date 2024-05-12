@@ -2,7 +2,7 @@ import { FC, useContext } from "react";
 import styled from "styled-components";
 import utils from "utils";
 import parse from "html-react-parser";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { postApi, setEditModal } from "store/reducers/post";
 import { AppDispatch, RootState } from "store";
@@ -19,6 +19,7 @@ const PostCard: FC<Props> = ({ elem }) => {
   const dispatch = useDispatch() as AppDispatch;
   const user = useSelector((state: RootState) => state.user.data);
   const { setId } = useContext(UIContext);
+  const location = useLocation()
 
   const methods = {
     delete: async function () {
@@ -41,7 +42,11 @@ const PostCard: FC<Props> = ({ elem }) => {
           >
             <div className="post-container">
               <div className="category">{elem?.category}</div>
-              <div className="user">
+              <div className="user" onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                navigate(`/profile/${elem?.user_id}`);
+              }}>
                 <div className="user-left">
                   <div className="user-img">
                     <UserImage src={elem?.user?.img} alt={elem?.user?.name} />
@@ -54,10 +59,10 @@ const PostCard: FC<Props> = ({ elem }) => {
                   </div>
                 </div>
               </div>
-              <h3 className="title">{elem.title}</h3>
+              <h3 className="postcard-title">{elem.title}</h3>
               <div className="post-content-wrapper">
                 <div className="post-content">{parse(elem.content)}</div>
-                {user && elem.user.id === user?.id ? (
+                {user && elem.user.id === user?.id && location.pathname !== '/likedposts' ? (
                   <div className="post-options">
                     <button
                       className="custom-btn secondary"
@@ -85,9 +90,8 @@ const PostCard: FC<Props> = ({ elem }) => {
                   <div className="info">
                     <p>{elem?.views?.[0]?.count}</p>
                     <span
-                      className={`material-symbols-outlined icon ${
-                        reaction?.type === "like" && "filled"
-                      }`}
+                      className={`material-symbols-outlined icon ${reaction?.type === "like" && "filled"
+                        }`}
                     >
                       visibility
                     </span>
@@ -95,9 +99,8 @@ const PostCard: FC<Props> = ({ elem }) => {
                   <div className="info">
                     <p>{elem?.likes?.[0]?.count}</p>
                     <span
-                      className={`material-symbols-outlined icon ${
-                        reaction?.type === "like" && "filled"
-                      }`}
+                      className={`material-symbols-outlined icon ${reaction?.type === "like" && "filled"
+                        }`}
                     >
                       favorite
                     </span>
@@ -193,7 +196,7 @@ const Content = styled.div`
         }
       }
 
-      .title {
+      .postcard-title {
         color: var(--element-color);
         font-weight: normal;
         font-family: var(--font-regular);

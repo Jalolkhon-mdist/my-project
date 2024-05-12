@@ -39,27 +39,17 @@ const AsideRight: FC = () => {
           </div>
 
           <div className="btn-group">
-            <Link to={""} className="custom-btn-gray">
+            <Link to={`/profile/${user?.id}`} className="custom-btn-gray">
               <span className="material-symbols-outlined filled like icon">
                 person
               </span>
             </Link>
-            <Link to={""} className="custom-btn-gray">
+            <Link to={"/likedposts"} className="custom-btn-gray">
               <span className="material-symbols-outlined filled like icon">
-                settings
+                favorite
               </span>
             </Link>
-            <Link to={""} className="custom-btn-gray">
-              <span className="material-symbols-outlined filled like icon">
-                bookmark
-              </span>
-            </Link>
-            <Link to={""} className="custom-btn-gray">
-              <span className="material-symbols-outlined filled like icon">
-                mail
-              </span>
-            </Link>
-            <Link to={""} className="custom-btn-gray">
+            <Link to={"/commentedposts"} className="custom-btn-gray">
               <span className="material-symbols-outlined filled like icon">
                 groups
               </span>
@@ -110,6 +100,12 @@ const Content = styled.div`
       .alt {
         font-size: 24px;
       }
+    }
+
+    .user-name{
+      width: 100%;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
   }
 

@@ -108,16 +108,14 @@ const Comment: FC<Props> = ({ element }) => {
               <button className="btn" onClick={() => methods.like()}>
                 <p>{methods.reactionsCount().likes}</p>
                 <span
-                  className={`material-symbols-outlined bold icon ${
-                    element?.reaction?.[0]?.type === "like" && user?.id
-                      ? "filled"
-                      : ""
-                  }`}
+                  className={`material-symbols-outlined bold icon ${element?.reaction?.[0]?.type === "like" && user?.id
+                    ? "filled"
+                    : ""
+                    }`}
                 >
                   favorite
                 </span>
               </button>
-              <button className="btn">Reply</button>
             </div>
             {user && element.user.id === user?.id ? (
               <div className="options">

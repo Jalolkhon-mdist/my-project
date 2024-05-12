@@ -134,20 +134,20 @@ const signUp = createAsyncThunk(
         throw error;
       }
 
-      await supabase.from("user_metadata").upsert(
-        {
-          id: data.user?.id,
-          name: data.user?.email,
-          email: data.user?.email,
-          img: `${Date.now()}.png`,
-        },
-        { onConflict: "id" }
-      );
+      await supabase
+        .from("user_metadata")
+        .upsert(
+          {
+            id: data.user?.id,
+            name: data.user?.email,
+            email: data.user?.email,
+          },
+          { onConflict: "id" }
+        )
+        .then();
 
       await dispatch(signIn(form));
       dispatch(requireLogin(false));
-      window.location.reload();
-      window.location.pathname = "/profile";
 
       return data;
     } catch (error: any) {

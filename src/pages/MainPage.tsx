@@ -2,7 +2,7 @@ import { FC } from "react";
 import PostList from "./PostList";
 import styled from "styled-components";
 import { Route, Routes } from "react-router-dom";
-import { Create, Edit, Post } from "pages";
+import { CommentedPosts, LikedPosts, Post } from "pages";
 import Category from "./Category";
 
 const Home: FC = () => {
@@ -13,13 +13,9 @@ const Home: FC = () => {
           <Route element={<PostList />} path="/" />
           <Route element={<Post />} path="/post/:id" />
           <Route element={<Category />} path="/c/:category" />
+          <Route element={<LikedPosts />} path="/likedposts" />
+          <Route element={<CommentedPosts />} path="/commentedposts" />
         </Routes>
-      </div>
-      <div className="create-wrapper">
-        <Create />
-      </div>
-      <div className="edit-wrapper">
-        <Edit />
       </div>
     </Main>
   );
@@ -34,11 +30,5 @@ const Main = styled.main`
     max-width: 1440px;
     width: 100%;
     margin: 0 auto;
-  }
-
-  .create-wrapper,
-  .edit-wrapper {
-    display: flex;
-    justify-content: center;
   }
 `;

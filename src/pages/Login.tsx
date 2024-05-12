@@ -1,12 +1,13 @@
 import { FC, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { AppDispatch } from "store";
 import { userApi } from "store/reducers/user";
 import styled from "styled-components";
 
 const Login: FC = () => {
   const dispatch = useDispatch() as AppDispatch;
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const type = searchParams.get("type");
   const [passwordType, setPasswordType] = useState("password");
@@ -36,6 +37,8 @@ const Login: FC = () => {
     dispatch(userApi.signUp(form)).then((e) => {
       if (e.payload) {
         setUserExists(false);
+        navigate('/')
+        window.location.reload();
       } else {
         setUserExists(true);
       }

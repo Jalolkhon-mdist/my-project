@@ -16,6 +16,7 @@ const PostList: FC = () => {
   const posts = useSelector((state: RootState) => state.post.list.data);
   const category = searchParams.get("category");
   const orderBy = searchParams.get("order-by");
+  const categoryText = category?.split(',')
 
   useEffect(() => {
     dispatch(postApi.list.get({ category, order: orderBy }));
@@ -25,11 +26,20 @@ const PostList: FC = () => {
     <Container>
       <Content>
         <div className="header">
-          <h1 className="title">Welcome to Social Club</h1>
-          <p className="subtitle">
-            Give & receive support in more than 50 support groups. Use the
-            search bar below to find a group or search the entire site.
-          </p>
+          {
+            category ? <div className="header-content green">
+              <h1 className="title">{categoryText?.[0]}: {categoryText?.[1]}</h1>
+              <p className="subtitle">
+                See the problems and support people in this category
+              </p>
+            </div> : <div className="header-content">
+              <h1 className="title">Welcome to Social Club</h1>
+              <p className="subtitle">
+                Give & receive support in more than 50 support groups. Use the
+                search bar below to find a group or search the entire site.
+              </p>
+            </div>
+          }
           <Searchbar />
         </div>
         <Main>
@@ -90,14 +100,30 @@ const Content = styled.div`
       font-size: 35px;
       font-family: var(--font-bold);
       color: var(--title-color);
-      margin-bottom: 10px;
     }
 
     .subtitle {
       font-size: 15px;
       font-family: var(--font-regular);
       color: var(--text-color);
-      margin-bottom: 20px;
+    }
+  }
+  
+  .header-content{
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
+    padding: 20px;
+
+    &.green{
+      background: var(--element-color);
+
+      .title, .subtitle{
+        color: white;
+      }
     }
   }
 `;

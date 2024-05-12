@@ -37,7 +37,7 @@ const Navbar: FC = () => {
                       {group.value.map((e, idx) => {
                         return (
                           <div key={idx} className="category">
-                            <Link to={`c/${e.value}`}>
+                            <Link to={{ pathname: '/', search: `category=${group.label}, ${e.label}` }}>
                               <p>{e.label}</p>
                             </Link>
                           </div>
@@ -86,11 +86,6 @@ const Navbar: FC = () => {
               />
             ) : (
               <ul className="link-list">
-                <li className="link">
-                  <Link to={``} className="custom-btn">
-                    Support Someone
-                  </Link>
-                </li>
                 <li className="link">
                   <Link to={`/login?type=sign-up`} className="custom-btn">
                     Sign Up
@@ -218,6 +213,7 @@ const Content = styled.div`
               font-size: 14px;
               color: var(--text-color);
               white-space: nowrap;
+              width: 100%;
             }
           }
         }
